@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ia-spring-lab-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-iaspringlab}
+      POSTGRES_USER: ${DB_USERNAME:-iaspringlab}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-iaspringlab}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ia-spring-lab-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  ia-spring-lab-postgres-data:
