@@ -1,5 +1,6 @@
 package com.example.iaspringlab.customer;
 
+import com.example.iaspringlab.account.SecurityConfig;
 import com.example.iaspringlab.exception.DuplicateEmailException;
 import com.example.iaspringlab.exception.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CustomerController.class)
+@Import(SecurityConfig.class)
 class CustomerControllerTest {
 
     @Autowired

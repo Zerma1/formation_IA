@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "orders")
@@ -55,6 +56,26 @@ public class Order {
     public void addLine(OrderLine line) {
         line.setOrder(this);
         lines.add(line);
+    }
+
+    public Optional<OrderLine> findLineForProduct(Long productId) {
+        return lines.stream()
+                .filter(line -> line.getProduct().getId().equals(productId))
+                .findFirst();
+    }
+
+    public Optional<OrderLine> findLine(Long lineId) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(lineId))
+                .findFirst();
+    }
+
+    public void removeLine(OrderLine line) {
+        lines.remove(line);
+    }
+
+    public boolean hasLines() {
+        return !lines.isEmpty();
     }
 
     public BigDecimal total() {

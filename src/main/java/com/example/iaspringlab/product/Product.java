@@ -1,13 +1,21 @@
 package com.example.iaspringlab.product;
 
+import com.example.iaspringlab.category.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "products")
@@ -28,6 +36,14 @@ public class Product {
 
     @Column(nullable = false)
     private boolean active;
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_categories",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private final Set<Category> categories = new HashSet<>();
 
     protected Product() {
     }
@@ -73,5 +89,18 @@ public class Product {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Set<Category> getCategories() {
+        return Collections.unmodifiableSet(categories);
+    }
+
+    public void replaceCategories(Collection<Category> newCategories) {
+        categories.clear();
+        categories.addAll(newCategories);
+    }
+
+    public void removeCategory(Category category) {
+        categories.remove(category);
     }
 }

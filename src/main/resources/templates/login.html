@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Connexion')}"></head>
+<body>
+<main class="login-page">
+    <form class="card login-card" th:action="@{/login}" method="post">
+        <h1>IA Spring Lab</h1>
+        <p class="muted">Connectez-vous pour continuer.</p>
+
+        <div class="alert alert-error" th:if="${param.error}">Identifiant ou mot de passe incorrect.</div>
+        <div class="alert alert-success" th:if="${param.logout}">Vous êtes déconnecté.</div>
+
+        <label for="username">Identifiant</label>
+        <input id="username" name="username" type="text" autocomplete="username" required autofocus>
+
+        <label for="password">Mot de passe</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+        <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+    </form>
+</main>
+</body>
+</html>

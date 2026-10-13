@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' · IA Spring Lab'">IA Spring Lab</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<header th:fragment="nav" class="topbar">
+    <a class="brand" th:href="@{/}">IA Spring Lab</a>
+    <nav>
+        <th:block sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/products}">Produits</a>
+            <a th:href="@{/admin/categories}">Catégories</a>
+        </th:block>
+        <th:block sec:authorize="hasRole('USER')">
+            <a th:href="@{/shop}">Catalogue</a>
+            <a th:href="@{/shop/cart}">Panier
+                <span class="badge" th:if="${cartItemCount != null and cartItemCount > 0}" th:text="${cartItemCount}">0</span>
+            </a>
+            <a th:href="@{/shop/orders}">Mes commandes</a>
+        </th:block>
+    </nav>
+    <form sec:authorize="isAuthenticated()" class="logout" th:action="@{/logout}" method="post">
+        <span class="who" sec:authentication="name">user</span>
+        <button type="submit" class="btn btn-ghost">Déconnexion</button>
+    </form>
+</header>
+
+<div th:fragment="flash">
+    <div class="alert alert-success" th:if="${success}" th:text="${success}">OK</div>
+    <div class="alert alert-error" th:if="${error}" th:text="${error}">Erreur</div>
+</div>
+
+<th:block th:fragment="status(status)" th:switch="${status.name()}">
+    <span th:case="'DRAFT'" class="status status-draft">Brouillon</span>
+    <span th:case="'CONFIRMED'" class="status status-confirmed">Confirmée</span>
+    <span th:case="'CANCELLED'" class="status status-cancelled">Annulée</span>
+</th:block>
+
+<span th:fragment="money(amount)"
+      th:text="${#numbers.formatDecimal(amount, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'">0,00 €</span>
+
+</body>
+</html>

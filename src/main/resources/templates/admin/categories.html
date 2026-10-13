@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Catégories')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="container narrow">
+    <h1>Catégories</h1>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <form class="card form inline-form" th:object="${form}" th:action="@{/admin/categories}" method="post">
+        <div class="grow">
+            <label for="name">Nouvelle catégorie</label>
+            <input id="name" type="text" th:field="*{name}" th:errorclass="invalid" placeholder="ex. Informatique">
+            <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    </form>
+
+    <p class="empty" th:if="${#lists.isEmpty(categories)}">Aucune catégorie pour le moment.</p>
+
+    <table class="table" th:unless="${#lists.isEmpty(categories)}">
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th class="actions">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${categories}">
+            <td th:text="${c.name()}">Nom</td>
+            <td class="actions">
+                <a class="btn btn-small" th:href="@{/admin/categories/{id}/edit(id=${c.id()})}">Modifier</a>
+                <form th:action="@{/admin/categories/{id}/delete(id=${c.id()})}" method="post"
+                      onsubmit="return confirm('Supprimer cette catégorie ? Les produits seront conservés mais détachés.');">
+                    <button type="submit" class="btn btn-small btn-danger">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

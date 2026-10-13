@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mes commandes')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="container">
+    <h1>Mes commandes</h1>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <p class="empty" th:if="${#lists.isEmpty(orders)}">Vous n'avez pas encore passé de commande.</p>
+
+    <table class="table" th:unless="${#lists.isEmpty(orders)}">
+        <thead>
+        <tr>
+            <th>N°</th>
+            <th>Date</th>
+            <th>Articles</th>
+            <th class="num">Total</th>
+            <th>Statut</th>
+            <th class="actions"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="o : ${orders}">
+            <td th:text="${o.id()}">1</td>
+            <td th:text="${#temporals.format(o.createdAt(), 'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+            <td th:text="${#aggregates.sum(o.lines().![quantity()])}">1</td>
+            <td class="num" th:insert="~{fragments/layout :: money(${o.total()})}"></td>
+            <td th:insert="~{fragments/layout :: status(${o.status()})}"></td>
+            <td class="actions">
+                <a class="btn btn-small" th:href="@{/shop/orders/{id}(id=${o.id()})}">Détail</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

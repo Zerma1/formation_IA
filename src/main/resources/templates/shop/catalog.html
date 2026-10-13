@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Catalogue')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="container">
+    <div class="page-header">
+        <h1>Catalogue</h1>
+        <a class="btn btn-primary" th:href="@{/shop/cart}">Voir le panier</a>
+    </div>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <nav class="filters" th:unless="${#lists.isEmpty(categories)}">
+        <a th:href="@{/shop}" th:classappend="${selectedCategoryId == null} ? 'active'">Toutes</a>
+        <a th:each="c : ${categories}" th:href="@{/shop(categoryId=${c.id()})}" th:text="${c.name()}"
+           th:classappend="${selectedCategoryId == c.id()} ? 'active'">Catégorie</a>
+    </nav>
+
+    <p class="empty" th:if="${#lists.isEmpty(products)}">Aucun produit disponible.</p>
+
+    <div class="grid">
+        <article class="card product" th:each="p : ${products}">
+            <div class="product-ref" th:text="${p.reference()}">REF</div>
+            <h2 th:text="${p.name()}">Produit</h2>
+            <div class="tags">
+                <span class="tag" th:each="c : ${p.categories()}" th:text="${c.name()}">Cat</span>
+            </div>
+            <div class="price" th:insert="~{fragments/layout :: money(${p.price()})}"></div>
+            <form class="add-to-cart" th:action="@{/shop/cart/items}" method="post">
+                <input type="hidden" name="productId" th:value="${p.id()}">
+                <input type="hidden" name="categoryId" th:if="${selectedCategoryId != null}" th:value="${selectedCategoryId}">
+                <input type="number" name="quantity" value="1" min="1" required aria-label="Quantité">
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+            </form>
+        </article>
+    </div>
+</main>
+</body>
+</html>

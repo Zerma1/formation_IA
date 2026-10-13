@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Produits')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="container">
+    <div class="page-header">
+        <h1>Produits</h1>
+        <a class="btn btn-primary" th:href="@{/admin/products/new}">Nouveau produit</a>
+    </div>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <p class="empty" th:if="${#lists.isEmpty(products)}">Aucun produit pour le moment.</p>
+
+    <table class="table" th:unless="${#lists.isEmpty(products)}">
+        <thead>
+        <tr>
+            <th>Référence</th>
+            <th>Nom</th>
+            <th>Catégories</th>
+            <th class="num">Prix</th>
+            <th>Statut</th>
+            <th class="actions">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${products}">
+            <td th:text="${p.reference()}">REF</td>
+            <td th:text="${p.name()}">Nom</td>
+            <td>
+                <span class="tag" th:each="c : ${p.categories()}" th:text="${c.name()}">Cat</span>
+                <span class="muted" th:if="${#lists.isEmpty(p.categories())}">—</span>
+            </td>
+            <td class="num" th:insert="~{fragments/layout :: money(${p.price()})}"></td>
+            <td>
+                <span class="status status-confirmed" th:if="${p.active()}">Actif</span>
+                <span class="status status-cancelled" th:unless="${p.active()}">Inactif</span>
+            </td>
+            <td class="actions">
+                <a class="btn btn-small" th:href="@{/admin/products/{id}/edit(id=${p.id()})}">Modifier</a>
+                <form th:action="@{/admin/products/{id}/delete(id=${p.id()})}" method="post"
+                      onsubmit="return confirm('Supprimer ce produit ?');">
+                    <button type="submit" class="btn btn-small btn-danger">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

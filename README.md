@@ -58,7 +58,7 @@ Codes d'erreur : `400` (validation Bean Validation), `404` (ressource absente), 
 
 ## Hypothèses (non couvertes explicitement par `business-rules.md`)
 
-- Les commandes ne sont créées qu'en statut `DRAFT` ; aucune modification des lignes après création n'est prévue par les règles métier, elle n'est donc pas implémentée.
+- Les commandes ne sont créées qu'en statut `DRAFT`. Via l'API REST, les lignes ne sont pas modifiables après création ; seul le panier de l'interface web (voir plus bas) modifie les lignes d'une commande `DRAFT`.
 - L'unicité de la référence produit n'est pas exigée par les règles métier : elle n'est pas imposée techniquement.
 - La suppression d'un client ou d'un produit référencé par une commande existante est bloquée par la contrainte de clé étrangère en base (HTTP 409), aucune règle métier ne précisant ce cas.
 
@@ -70,6 +70,35 @@ docker compose up -d        # démarre PostgreSQL
 ```
 
 Configuration par défaut (`src/main/resources/application.properties`) : base `iaspringlab` sur `localhost:5432`, utilisateur/mot de passe `iaspringlab`/`iaspringlab`.
+
+## Tester l'API via Swagger UI
+
+Une fois l'application démarrée (étape ci-dessus), ouvrir :
+
+```
+http://localhost:8080/swagger-ui.html
+```
+
+Chaque endpoint y est documenté avec son schéma de requête/réponse et un bouton **"Try it out"** pour l'exécuter directement depuis le navigateur (créer un client, un produit, une commande, changer un statut, etc.), sans outil externe (Postman/curl). La spécification OpenAPI brute est disponible sur `http://localhost:8080/v3/api-docs`.
+
+## Interface web
+
+Une fois l'application démarrée, ouvrir `http://localhost:8080/` (pages Thymeleaf, authentification Spring Security par formulaire).
+
+| Compte | Mot de passe | Rôle | Accès |
+|--------|--------------|------|-------|
+| `admin` | `admin` | ADMIN | `/admin/products`, `/admin/categories` : créer, modifier, supprimer produits et catégories |
+| `user`  | `user`  | USER  | `/shop` : catalogue, panier, commande, historique des commandes |
+
+Les deux comptes sont créés au démarrage s'ils n'existent pas (table `app_users`, mots de passe hachés en BCrypt). Le compte `user` est rattaché au client `user@ia-spring-lab.local`, créé lui aussi au démarrage.
+
+Fonctionnement :
+
+- **Catégories** : un produit peut avoir zéro, une ou plusieurs catégories. Supprimer une catégorie conserve les produits, qui en sont simplement détachés.
+- **Panier** : c'est la commande `DRAFT` du client, enregistrée en base au fil des ajouts (on la retrouve donc après une déconnexion). Ajouter un produit déjà présent augmente sa quantité ; retirer la dernière ligne supprime le panier (une commande contient au moins une ligne). Un produit inactif ne peut pas être ajouté.
+- **Commander** : le bouton « Commander » fait passer le panier de `DRAFT` à `CONFIRMED`.
+- **Mes commandes** : liste des commandes passées (hors panier en cours), de la plus récente à la plus ancienne, avec leur détail.
+- L'API REST `/api/**` et Swagger UI restent accessibles sans authentification, comme avant.
 
 ## Tests
 

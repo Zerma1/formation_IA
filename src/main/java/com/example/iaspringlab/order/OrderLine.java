@@ -68,6 +68,10 @@ public class OrderLine {
         return quantity;
     }
 
+    void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
     public BigDecimal getUnitPrice() {
         return unitPrice;
     }

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${productId} == null ? 'Nouveau produit' : 'Modifier le produit')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="container narrow">
+    <h1 th:text="${productId} == null ? 'Nouveau produit' : 'Modifier le produit'">Produit</h1>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <form class="card form" th:object="${form}" method="post"
+          th:action="${productId} == null ? @{/admin/products} : @{/admin/products/{id}(id=${productId})}">
+
+        <label for="reference">Référence</label>
+        <input id="reference" type="text" th:field="*{reference}" th:errorclass="invalid">
+        <p class="field-error" th:if="${#fields.hasErrors('reference')}" th:errors="*{reference}"></p>
+
+        <label for="name">Nom</label>
+        <input id="name" type="text" th:field="*{name}" th:errorclass="invalid">
+        <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+
+        <label for="price">Prix (€)</label>
+        <input id="price" type="number" step="0.01" min="0.01" th:field="*{price}" th:errorclass="invalid">
+        <p class="field-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
+
+        <label class="checkbox">
+            <input type="checkbox" th:field="*{active}"> Actif (peut être commandé)
+        </label>
+
+        <fieldset>
+            <legend>Catégories</legend>
+            <p class="muted" th:if="${#lists.isEmpty(categories)}">
+                Aucune catégorie. <a th:href="@{/admin/categories}">En créer une</a>.
+            </p>
+            <label class="checkbox" th:each="c : ${categories}">
+                <input type="checkbox" th:field="*{categoryIds}" th:value="${c.id()}">
+                <span th:text="${c.name()}">Catégorie</span>
+            </label>
+        </fieldset>
+
+        <div class="form-actions">
+            <a class="btn btn-ghost" th:href="@{/admin/products}">Annuler</a>
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>
